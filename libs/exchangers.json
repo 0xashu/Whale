@@ -1,0 +1,12 @@
+{
+  "pairs": {
+    "btc": "btc",
+    "eth": "eth",
+    "dgd": "dgd",
+    "etc": "etc",
+    "1st": "1st",
+    "rep": "rep",
+    "zec": "zec"
+  },
+  "endpoint": "https://yunbi.com/api/v2/tickers.json"
+}

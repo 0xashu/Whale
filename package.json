@@ -1,0 +1,33 @@
+{
+  "name": "whale",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "preferGlobal": "true",
+  "bin": {
+    "whale": "bin/cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aaaaaashu/Whale.git"
+  },
+  "author": "Aaaaaashu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Aaaaaashu/Whale/issues"
+  },
+  "homepage": "https://github.com/Aaaaaashu/Whale#readme",
+  "dependencies": {
+    "blessed": "^0.1.81",
+    "blessed-contrib": "^4.5.5",
+    "colors": "^1.1.2",
+    "commander": "^2.9.0",
+    "emojic": "^1.1.7",
+    "inquirer": "^1.2.3",
+    "superagent": "^2.3.0",
+    "term-list": "^0.2.1"
+  }
+}
