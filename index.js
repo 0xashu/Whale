@@ -7,7 +7,7 @@ const exchangers = require('./libs/exchangers')
 class Whale {
   constructor(args, pairs) {
     this.screen = blessed.screen()
-    this.grid = new contrib.grid({rows: 12, cols: 12, screen: this.screen})
+    this.grid = new contrib.grid({ rows: 12, cols: 12, screen: this.screen })
     this.price = new Price()
     this.cacheData
 
@@ -23,15 +23,18 @@ class Whale {
 
   fetchPrice(pairs) {
     return new Promise((resolve, reject) => {
-      this.price.fetch(pairs).then((data) => {
-        resolve(this.washData(data))
+      Promise.all([
+        this.price.fetch(pairs),
+        this.price.openPrice(pairs),
+      ]).then((res) => {
+        resolve(this.washData(res[0], res[1]))
       }).catch((err) => {
         reject(err)
       })
     })
   }
 
-  init(data) {
+  init(data, priceTrendData) {
     this.table = this.grid.set(0, 0, 6, 12, contrib.table,
       { keys: true
       , vi: true
@@ -51,12 +54,13 @@ class Whale {
     //   , showLegend: true
     //   , legend: {width: 10}})
 
-    this.log = this.grid.set(6, 0, 1, 12, contrib.log,
+    this.log = this.grid.set(12, 0, 1, 12, contrib.log,
       { fg: "green"
       , selectedFg: "green"
       , label: 'Server Log'})
 
     this.createTable(data)
+    // this.createLine(pair, priceTrendData)
     this.createLog(utils.formatCurrentTime())
   }
 
@@ -96,9 +100,23 @@ class Whale {
     })
   }
 
-  washData(data) {
-    return data.map((item) => {
-      return [item.name, item.last, `${utils.formatDecimal(item.percent_change_24h || 0 * 100, 2)}%`]
+  washData(last, open) {
+    const market = []
+
+    last.map((lastPrice) => {
+      open.map((openPrice) => {
+        if (lastPrice.name === openPrice.name) {
+          market.push({ name: lastPrice.name, last: lastPrice.last, open: openPrice.open })
+        }
+      })
+    })
+
+    return market.map((item) => {
+      const change = (item.last - item.open).toString().charAt(0) === '-'
+      ? `- ${utils.formatDecimal(-(item.last - item.open) / item.open * 100, 2)}%`
+      : `+ ${utils.formatDecimal((item.last - item.open) / item.open * 100, 2)}%`
+
+      return [item.name, item.last, change]
     })
   }
 

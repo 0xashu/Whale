@@ -8,5 +8,6 @@
     "rep": "rep",
     "zec": "zec"
   },
-  "endpoint": "https://yunbi.com/api/v2/tickers.json"
+  "endpoint": "https://yunbi.com/api/v2/tickers.json",
+  "kendpoint": "https://yunbi.com/api/v2/k.json"
 }
