@@ -3,14 +3,13 @@ const args = require('commander')
 args
   .version('0.0.1')
   .description('Market Price')
-  .option('-a, --auto-refresh', 'Add market auto refresh support (default 30s)')
-  .option('-s, --seconds <number>', 'Add market auto refresh support', parseInt)
+  .option('-s, --seconds <number>', 'Set auto refresh time', parseInt)
 
 args.on('--help', () => {
   console.log('  Examples:')
   console.log('')
-  console.log('    $ whale -a')
-  console.log('    $ whale -a -s 60')
+  console.log('    $ whale -g')
+  console.log('    $ whale -s 60')
   console.log('')
 })
 
