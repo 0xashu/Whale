@@ -1,13 +1,13 @@
 const request = require('superagent')
-const exchangers = require('./exchangers')
+const exchangers = require('../config/exchangers')
 
 class Price {
-  fetch(pairs) {
+  getCurrentPrice(pairs) {
     if (this.hasPairs(pairs)) {
       return new Promise((resolve, reject) => {
         request(exchangers.endpoint).end((err, res) => {
           if (!err) {
-            const formatData = this.wash(res.body, pairs)
+            const formatData = this.filterCurrentPrice(res.body, pairs)
             resolve(formatData)
           } else {
             reject(err)
@@ -19,7 +19,7 @@ class Price {
     }
   }
 
-  openPrice(pairs) {
+  getOpenPrice(pairs) {
     if (this.hasPairs(pairs)) {
       const openPriceList = []
       const tsOpen = new Date().setHours(0,0,0,0) / 1000
@@ -50,18 +50,16 @@ class Price {
     }
   }
 
-  priceHistory(pair) {
-    const ts = Math.round(new Date().getTime() / 1000)
-    const tsWeek = ts - (7 * 24 * 3600)
+  getPriceTrend(pair) {
+    // const ts = Math.round(new Date().getTime() / 1000)
+    // const tsWeek = ts - (7 * 24 * 3600)
 
     return new Promise((resolve, reject) => {
       request(exchangers.kendpoint)
-      .query({ market: pair + 'cny', period: 1440, timestamp: tsWeek })
+      .query({ market: pair + 'cny', period: 1440, limit: 30 })
       .end((err, res) => {
         if (!err) {
           resolve(res.body)
-          // const formatData = this.wash(res.body, pairs)
-          // resolve(formatData)
         } else {
           reject(err)
         }
@@ -69,7 +67,7 @@ class Price {
     })
   }
 
-  wash(data = [], pairs) {
+  filterCurrentPrice(data = [], pairs) {
     const formatData = []
 
     Object.keys(data).map((item) => {

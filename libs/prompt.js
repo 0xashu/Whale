@@ -1,5 +1,5 @@
 const inquirer = require('inquirer')
-const exchangers = require('./exchangers.json')
+const exchangers = require('../config/exchangers.json')
 
 const prompt = new Promise((resolve, reject) => {
   inquirer.prompt({

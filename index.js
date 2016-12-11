@@ -2,14 +2,14 @@ const blessed = require('blessed')
 const contrib = require('blessed-contrib')
 const Price = require('./libs/price')
 const utils = require('./libs/utils')
-const exchangers = require('./libs/exchangers')
+const exchangers = require('./config/exchangers')
 
 class Whale {
   constructor(args, pairs) {
     this.screen = blessed.screen()
     this.grid = new contrib.grid({ rows: 12, cols: 12, screen: this.screen })
     this.price = new Price()
-    this.cacheData
+    this.cacheData = []
 
     this.fetchPrice(pairs).then((data) => {
       this.cacheData = data
@@ -22,19 +22,25 @@ class Whale {
   }
 
   fetchPrice(pairs) {
+    const currentPair = pairs.split(',')[0]
+
     return new Promise((resolve, reject) => {
       Promise.all([
-        this.price.fetch(pairs),
-        this.price.openPrice(pairs),
+        this.price.getCurrentPrice(pairs),
+        this.price.getOpenPrice(pairs),
+        this.price.getPriceTrend(currentPair),
       ]).then((res) => {
-        resolve(this.washData(res[0], res[1]))
+        resolve({
+          currentPrice: this.washCurrentPrice(res[0], res[1]),
+          priceTrend: this.washPriceTrend(currentPair, res[2]),
+        })
       }).catch((err) => {
         reject(err)
       })
     })
   }
 
-  init(data, priceTrendData) {
+  init(data) {
     this.table = this.grid.set(0, 0, 6, 12, contrib.table,
       { keys: true
       , vi: true
@@ -42,52 +48,44 @@ class Whale {
       , selectedFg: 'white'
       , selectedBg: 'cyan'
       , interactive: true
-      , label: 'Whale -- Market Price'
-      , border: {type: "line", fg: "cyan"}
+      , label: 'Whale -- Current Price'
+      , border: { type: "line", fg: "cyan" }
       , columnSpacing: 10
-      , columnWidth: [10, 10, 10]})
+      , columnWidth: [10, 10, 10] })
 
-    // this.line = this.grid.set(6, 0, 5, 12, contrib.line,
-    //   { showNthLabel: 5
-    //   , maxY: 100
-    //   , label: 'Price Trend'
-    //   , showLegend: true
-    //   , legend: {width: 10}})
+    this.line = this.grid.set(6, 0, 5, 12, contrib.line,
+      { showNthLabel: 5
+      , maxY: 100
+      , label: 'Price Trend (in recent month)'
+      , showLegend: true
+      , legend: { width: 10 } })
 
-    this.log = this.grid.set(12, 0, 1, 12, contrib.log,
+    this.log = this.grid.set(11, 0, 1, 12, contrib.log,
       { fg: "green"
       , selectedFg: "green"
-      , label: 'Server Log'})
+      , label: 'Server Log' })
 
-    this.createTable(data)
-    // this.createLine(pair, priceTrendData)
+    this.createTable(data.currentPrice)
+    this.createLine(data.priceTrend)
     this.createLog(utils.formatCurrentTime())
   }
 
   eventListeners(args, pairs) {
-    if (args.autoRefresh) {
-      this.timer = setInterval(() => {
-        this.createLog('Loading...')
-        this.fetchPrice(pairs).then((data) => {
-          this.cacheData = data
-          this.init(data)
-        }).catch((err) => {
-          this.createLog(`Load failure: ${err}`)
-        })
-      }, 1000 * (Number.isInteger(args.seconds) ? args.seconds : 30))
-    } else {
-      this.timer && clearInterval(this.timer)
-    }
+    this.timer = setInterval(() => {
+      this.createLog('Loading...')
+      this.fetchPrice(pairs).then((data) => {
+        this.cacheData = data
 
-    // this.table.rows.on('select', (item, selectedIndex) => {
-    //   this.createLog(`${selectedIndex} selected`)
-    //
-    //   Object.keys(exchangers).forEach((item, index) => {
-    //     if (selectedIndex === index) {
-    //       this.updateLine(exchangers[item].name, exchangers[item].meta)
-    //     }
-    //   })
-    // })
+        this.createTable(data.currentPrice)
+        this.createLog(utils.formatCurrentTime())
+      }).catch((err) => {
+        console.error(`Load failure: ${err}`)
+      })
+    }, 1000 * (Number.isInteger(args.seconds) ? args.seconds : 30))
+
+    this.table.rows.on('select', (item, selectedIndex) => {
+      this.updatePriceTrend(this.cacheData.currentPrice[selectedIndex][0])
+    })
 
     this.screen.on('resize', () => {
       utils.throttle(() => {
@@ -96,11 +94,12 @@ class Whale {
     })
 
     this.screen.key(['escape', 'q', 'C-c'], function(ch, key) {
+      this.timer && clearInterval(this.timer)
       return process.exit(0)
     })
   }
 
-  washData(last, open) {
+  washCurrentPrice(last, open) {
     const market = []
 
     last.map((lastPrice) => {
@@ -120,6 +119,22 @@ class Whale {
     })
   }
 
+  washPriceTrend(currentPair, data) {
+    const closePrices = []
+    const labels = []
+
+    data.map((record) => {
+      closePrices.push(record[1])
+      labels.push(utils.formatDate(new Date(record[0] * 1000), 'MM-dd'))
+    })
+
+    return {
+      currentPair,
+      closePrices,
+      labels
+    }
+  }
+
   createTable(data) {
     this.table.setData({
       headers: ['Asset Name', 'Price', 'Change'],
@@ -130,9 +145,9 @@ class Whale {
     this.screen.render()
   }
 
-  createLine(name, data) {
+  createLine(data) {
     const series = {
-      title: name,
+      title: data.currentPair,
       x: data.labels,
       y: data.closePrices,
     }
@@ -146,66 +161,13 @@ class Whale {
     this.screen.render()
   }
 
-  updateLine(name = 'ETH', pair = 'eth_cny_yunbi', period = 1440) {
-    const since = (parseInt(Date.now() / 1000, 10) - parseInt(period, 10) * 60 * 60)
-
-    this.fetchLine(pair, period, since).then((data) => {
-      const lineData = this.washLineData(data, period)
-      this.createLine(name, lineData)
+  updatePriceTrend(selectedPair) {
+    this.createLog('Loading...')
+    this.price.getPriceTrend(selectedPair).then((data) => {
+      this.createLine(this.washPriceTrend(selectedPair, data))
       this.createLog(utils.formatCurrentTime())
-    }, (e) => {
-      this.createLog(e)
-    })
-  }
-
-  washLineData(data, period) {
-    const closePrices = []
-    const labels = []
-
-    let fmt = 'hh:mm'
-    switch (period) {
-      case 5:
-      case 60:
-        break
-      case 120:
-      case 240:
-      case 1440:
-        fmt = 'MM-dd'
-        break
-      case 10080:
-        fmt = 'MM-dd'
-        break
-      default:
-        break
-    }
-
-    data.map((record) => {
-      const mappedRecord = {}
-      const recordJSON = JSON.parse(record)
-      mappedRecord.close = parseFloat(recordJSON.close)
-
-      labels.push(utils.formatDate(new Date(recordJSON.timestamp * 1000), fmt))
-      closePrices.push(mappedRecord.close)
-    })
-
-    return { closePrices, labels }
-  }
-
-  fetchLine(pair, period, since) {
-    process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
-    this.createLog('fetching line...')
-
-    return new Promise((resolve, reject) => {
-      request
-        .get('https://market.token.im/api/kline')
-        .query({ pair, period, since })
-        .end((err, res) => {
-          if (!err) {
-            resolve(res.body)
-          } else {
-            reject(err)
-          }
-        })
+    }).catch((err) => {
+      console.error(err)
     })
   }
 }
