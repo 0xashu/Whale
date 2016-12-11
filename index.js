@@ -54,11 +54,8 @@ class Whale {
       , columnWidth: [10, 10, 10] })
 
     this.line = this.grid.set(6, 0, 5, 12, contrib.line,
-      { showNthLabel: 5
-      , maxY: 100
-      , label: 'Price Trend (in recent month)'
-      , showLegend: true
-      , legend: { width: 10 } })
+      { label: 'Price Trend (recent month)'
+      , showLegend: true })
 
     this.log = this.grid.set(11, 0, 1, 12, contrib.log,
       { fg: "green"
@@ -162,7 +159,7 @@ class Whale {
   }
 
   updatePriceTrend(selectedPair) {
-    this.createLog('Loading...')
+    this.createLog(`Loading ${selectedPair} data...`)
     this.price.getPriceTrend(selectedPair).then((data) => {
       this.createLine(this.washPriceTrend(selectedPair, data))
       this.createLog(utils.formatCurrentTime())
