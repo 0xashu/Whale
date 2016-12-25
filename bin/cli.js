@@ -6,7 +6,7 @@ const prompt = require('../libs/prompt')
 const Whale = require('../index')
 
 prompt.then((answer) => {
-  CFonts.say('WHALE, a Ethereum and Bitcoin price board for geeks|Loading...', {
+  CFonts.say('Whale, crypto-currency market price board for geeks|Loading...', {
     font: 'console',
     align: 'left',
     colors: ['candy'],
