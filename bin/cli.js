@@ -6,7 +6,7 @@ const prompt = require('../libs/prompt')
 const Whale = require('../index')
 
 prompt.then((answer) => {
-  CFonts.say('Whale, a Ethereum and Bitcoin price board for geeks|Loading...', {
+  CFonts.say('WHALE, a Ethereum and Bitcoin price board for geeks|Loading...', {
     font: 'console',
     align: 'left',
     colors: ['candy'],
@@ -16,5 +16,5 @@ prompt.then((answer) => {
     maxLength: '0'
   })
 
-  new Whale(args, answer.pairs.join(','))
+  new Whale(args, answer.exchange, answer.markets)
 })
