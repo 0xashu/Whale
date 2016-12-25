@@ -14,6 +14,16 @@
     "type": "git",
     "url": "git+https://github.com/Aaaaaashu/Whale.git"
   },
+  "keywords": [
+    "ethereum",
+    "eth",
+    "ether"
+    "btc",
+    "bitcoin",
+    "digital cash",
+    "exchange",
+    "price",
+  ],
   "author": "Aaaaaashu",
   "license": "MIT",
   "bugs": {
@@ -26,9 +36,7 @@
     "cfonts": "^1.0.2",
     "colors": "^1.1.2",
     "commander": "^2.9.0",
-    "emojic": "^1.1.7",
     "inquirer": "^1.2.3",
-    "superagent": "^2.3.0",
-    "term-list": "^0.2.1"
+    "superagent": "^2.3.0"
   }
 }
