@@ -6,12 +6,12 @@ const exchangers = require('./config/exchangers')
 
 class Whale {
   constructor(args, pairs) {
-    this.screen = blessed.screen()
-    this.grid = new contrib.grid({ rows: 12, cols: 12, screen: this.screen })
     this.price = new Price()
     this.cacheData = []
 
     this.fetchPrice(pairs).then((data) => {
+      this.screen = blessed.screen()
+      this.grid = new contrib.grid({ rows: 12, cols: 12, screen: this.screen })
       this.cacheData = data
 
       this.init(data)

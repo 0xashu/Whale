@@ -23,6 +23,7 @@
   "dependencies": {
     "blessed": "^0.1.81",
     "blessed-contrib": "^4.5.5",
+    "cfonts": "^1.0.2",
     "colors": "^1.1.2",
     "commander": "^2.9.0",
     "emojic": "^1.1.7",
