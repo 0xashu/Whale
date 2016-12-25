@@ -1,32 +1,39 @@
 const inquirer = require('inquirer')
 const exchangers = require('../config/exchangers.json')
 
+let exchangeSelected = ''
+
 const prompt = new Promise((resolve, reject) => {
   inquirer.prompt({
-    type: 'checkbox',
-    name: 'market',
-    message: 'Select your favorite market?',
-    choices: ['POLONIEX', 'YUNBI'],
+    type: 'list',
+    name: 'exchange',
+    message: 'Select your favorite exchange?',
+    choices: Object.keys(exchangers),
     validate: function (answer) {
       if (answer.length < 1) {
-        return 'You must choose at least one market.'
+        return 'You must choose at least one exchange.'
       }
       return true
     }
   }).then((answer) => {
+    exchangeSelected = answer.exchange
+
     inquirer.prompt({
       type: 'checkbox',
-      name: 'pairs',
-      message: 'And your favorite pairs?',
-      choices: Object.keys(exchangers.pairs),
+      name: 'markets',
+      message: 'And your favorite market?',
+      choices: Object.keys(exchangers[answer.exchange].markets),
       validate: function (answer) {
         if (answer.length < 1) {
-          return 'You must choose at least one pair.';
+          return 'You must choose at least one market.';
         }
         return true
       }
     }).then((answer) => {
-      resolve(answer)
+      resolve({
+        exchange: exchangeSelected,
+        markets: answer.markets
+      })
     })
   })
 })
