@@ -2,23 +2,38 @@
   "Poloniex": {
     "currency": "$",
     "markets": {
-      "eth": "USDT_ETH",
-      "dgd": "USDT_BTC",
-      "etc": "USDT_REP"
+      "BTC": "USDT_BTC",
+      "ETH": "USDT_ETH",
+      "ETC": "USDT_ETC",
+      "ZEC": "USDT_ZEC",
+      "REP": "USDT_REP",
+      "LTC": "USDT_LTC"
     },
     "ticker": "https://poloniex.com/public?command=returnTicker",
     "kendpoint": "https://poloniex.com/public?command=returnChartData"
   },
+  "Kraken": {
+    "currency": "$",
+    "markets": {
+      "BTC": "XXBTZUSD",
+      "ETH": "XETHZUSD",
+      "ETC": "XETCZUSD",
+      "ZEC": "XZECZUSD",
+      "REP": "XREPZUSD"
+    },
+    "ticker": "https://api.kraken.com/0/public/Ticker",
+    "kendpoint": "https://api.kraken.com/0/public/OHLC"
+  },
   "Yunbi": {
     "currency": "¥",
     "markets": {
-      "btc": "btccny",
-      "eth": "ethcny",
-      "dgd": "dgdcny",
-      "etc": "etccny",
-      "1st": "1stcny",
-      "rep": "repcny",
-      "zec": "zeccny"
+      "BTC": "btccny",
+      "ETH": "ethcny",
+      "ETC": "etccny",
+      "ZEC": "zeccny",
+      "DGD": "dgdcny",
+      "1ST": "1stcny",
+      "REP": "repcny"
     },
     "ticker": "https://yunbi.com/api/v2/tickers.json",
     "kendpoint": "https://yunbi.com/api/v2/k.json"
