@@ -8,7 +8,7 @@ args
 args.on('--help', () => {
   console.log('  Examples:')
   console.log('')
-  console.log('    $ whale -g')
+  console.log('    $ whale -h')
   console.log('    $ whale -s 60')
   console.log('')
 })
