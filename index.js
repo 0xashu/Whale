@@ -1,14 +1,13 @@
 const blessed = require('blessed')
 const contrib = require('blessed-contrib')
-const Price = require('./libs/price')
+const sea = require('./libs/sea')
 const utils = require('./libs/utils')
 const wash = require('./libs/wash')
 const exchangers = require('./config/exchangers')
 
 class Whale {
   constructor(args, exchange, markets) {
-    this.price = new Price()
-    this.cacheData = []
+    this.cacheData = {}
 
     this.fetchPrice(exchange, markets).then((data) => {
       this.screen = blessed.screen()
@@ -18,38 +17,22 @@ class Whale {
       this.init(data)
       this.eventListeners(args, exchange, markets)
     }).catch((err) => {
-      console.error(err)
+      console.error('fetchPrice', err)
+      process.exit(0)
     })
   }
 
   fetchPrice(exchange, markets) {
     const currentMarket = markets[0]
 
-    if (exchange === 'Yunbi') {
-      return new Promise((resolve, reject) => {
-        Promise.all([
-          this.price.getCurrentPrice(exchange, markets),
-          this.price.getOpenPriceYUNBI(exchange, markets),
-          this.price.getPriceTrendYUNBI(exchange, currentMarket),
-        ]).then((res) => {
-          resolve({
-            currentPrice: wash.currentPriceYUNBI(res[0], res[1]),
-            priceTrend: wash.priceTrendYUNBI(currentMarket, res[2]),
-          })
-        }).catch((err) => {
-          reject(err)
-        })
-      })
-    }
-
     return new Promise((resolve, reject) => {
       Promise.all([
-        this.price.getCurrentPrice(exchange, markets),
-        this.price.getPriceTrend(exchange, currentMarket),
+        sea.getCurrentPrice(exchange, markets),
+        sea.getPriceTrend(exchange, currentMarket),
       ]).then((res) => {
         resolve({
-          currentPrice: wash.currentPrice(res[0]),
-          priceTrend: wash.priceTrend(currentMarket, res[1]),
+          currentPrice: wash.currentPrice(exchange, res[0]),
+          priceTrend: res[1],
         })
       }).catch((err) => {
         reject(err)
@@ -84,21 +67,20 @@ class Whale {
     this.createLog(utils.formatCurrentTime())
   }
 
-  eventListeners(args, markets) {
+  eventListeners(args, exchange, markets) {
     this.timer = setInterval(() => {
       this.createLog('Loading...')
-      this.fetchPrice(exchange, markets).then((data) => {
-        this.cacheData = data
-
-        this.createTable(data.currentPrice)
+      sea.getCurrentPrice(exchange, markets).then((res) => {
+        this.createTable(wash.currentPrice(exchange, res))
         this.createLog(utils.formatCurrentTime())
       }).catch((err) => {
         console.error(`Load failure: ${err}`)
+        process.exit(0)
       })
     }, 1000 * (Number.isInteger(args.seconds) ? args.seconds : 30))
 
     this.table.rows.on('select', (item, selectedIndex) => {
-      this.updatePriceTrend(this.cacheData.currentPrice[selectedIndex][0])
+      this.updatePriceTrend(exchange, this.cacheData.currentPrice[selectedIndex][0])
     })
 
     this.screen.on('resize', () => {
@@ -127,7 +109,7 @@ class Whale {
     const series = {
       title: data.currentMarket,
       x: data.labels,
-      y: data.closePrices,
+      y: data.closePricesList,
     }
 
     this.line.setData(series)
@@ -139,13 +121,14 @@ class Whale {
     this.screen.render()
   }
 
-  updatePriceTrend(selectedPair) {
-    this.createLog(`Loading ${selectedPair} data...`)
-    this.price.getPriceTrend(selectedPair).then((data) => {
-      this.createLine(wash.priceTrend(selectedPair, data))
+  updatePriceTrend(exchange, selectedMarket) {
+    this.createLog(`Loading ${selectedMarket} data...`)
+    sea.getPriceTrend(exchange, selectedMarket).then((data) => {
+      this.createLine(data)
       this.createLog(utils.formatCurrentTime())
     }).catch((err) => {
-      console.error(err)
+      console.error('updatePriceTrend', err)
+      process.exit(0)
     })
   }
 }
