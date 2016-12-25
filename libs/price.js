@@ -1,13 +1,14 @@
 const request = require('superagent')
 const exchangers = require('../config/exchangers')
+const utils = require('./utils')
 
 class Price {
-  getCurrentPrice(pairs) {
-    if (this.hasPairs(pairs)) {
+  getCurrentPrice(exchange, markets) {
+    if (this.hasMarkets(exchange, markets)) {
       return new Promise((resolve, reject) => {
-        request(exchangers.endpoint).end((err, res) => {
+        request(exchangers[exchange].ticker).end((err, res) => {
           if (!err) {
-            const formatData = this.filterCurrentPrice(res.body, pairs)
+            const formatData = this.formatCurrentPrice(res.body, exchange, markets)
             resolve(formatData)
           } else {
             reject(err)
@@ -19,18 +20,34 @@ class Price {
     }
   }
 
-  getOpenPrice(pairs) {
-    if (this.hasPairs(pairs)) {
+  getPriceTrendYUNBI(exchange, market) {
+    // const ts = Math.round(new Date().getTime() / 1000)
+    // const tsWeek = ts - (7 * 24 * 3600)
+    return new Promise((resolve, reject) => {
+      request(exchangers[exchange].kendpoint)
+      .query({ market: exchangers[exchange].markets[market], period: 1440, limit: 30 })
+      .end((err, res) => {
+        if (!err) {
+          resolve(res.body)
+        } else {
+          reject(err)
+        }
+      })
+    })
+  }
+
+  getOpenPriceYUNBI(exchange, markets) {
+    if (this.hasMarkets(exchange, markets)) {
       const openPriceList = []
       const tsOpen = new Date().setHours(0,0,0,0) / 1000
 
-      const promiseList = pairs.split(',').map((pair) => {
+      const promiseList = markets.map((market) => {
         return new Promise((resolve, reject) => {
-          request(exchangers.kendpoint)
-          .query({ market: pair + 'cny', limit: 1, period: 1, timestamp: tsOpen })
+          request(exchangers[exchange].kendpoint)
+          .query({ market: exchangers[exchange].markets[market], limit: 1, period: 1, timestamp: tsOpen })
           .end((err, res) => {
             if (!err) {
-              resolve({ name: pair, open: res.body[0][1] })
+              resolve({ name: market, open: res.body[0][1] })
             } else {
               reject(err)
             }
@@ -50,13 +67,13 @@ class Price {
     }
   }
 
-  getPriceTrend(pair) {
-    // const ts = Math.round(new Date().getTime() / 1000)
-    // const tsWeek = ts - (7 * 24 * 3600)
+  getPriceTrend(exchange, market, period = 86400, start, end) {
+    const ts = Math.round(new Date().getTime() / 1000)
+    const tsMonth = ts - (30 * 24 * 3600)
 
     return new Promise((resolve, reject) => {
-      request(exchangers.kendpoint)
-      .query({ market: pair + 'cny', period: 1440, limit: 30 })
+      request(exchangers[exchange].kendpoint)
+      .query({ currencyPair: exchangers[exchange].markets[market], period: period, start: start || tsMonth, end: end || 9999999999 })
       .end((err, res) => {
         if (!err) {
           resolve(res.body)
@@ -67,15 +84,19 @@ class Price {
     })
   }
 
-  filterCurrentPrice(data = [], pairs) {
+  formatCurrentPrice(data = [], exchange, markets) {
     const formatData = []
 
     Object.keys(data).map((item) => {
-      pairs.split(',').map((pair) => {
-        if (item === pair + 'cny') {
+      markets.map((market) => {
+        if (item === exchangers[exchange].markets[market]) {
+          const last = this.formatLast(exchange, data, item)
+          const percentChange = this.formatPercentChange(exchange, data, item)
+
           formatData.push({
-            name: pair,
-            last: data[item].ticker.last,
+            name: market,
+            last: `${exchangers[exchange].currency} ${last}`,
+            percentChange: percentChange
           })
         }
       })
@@ -84,11 +105,45 @@ class Price {
     return formatData
   }
 
-  hasPairs(pairs) {
-    const exchangePairs = Object.keys(exchangers.pairs)
+  formatLast(exchange, data, market) {
+    let last = 0
 
-    pairs.split(',').forEach((pair) => {
-      if (!exchangePairs.includes(pair)) return false
+    switch (exchange) {
+      case 'Poloniex':
+        last = data[market].last
+        break;
+      case 'Yunbi':
+        last = data[market].ticker.last
+        break;
+      default:
+        console.error('No current exchange')
+    }
+
+    return utils.formatDecimal(last, 2)
+  }
+
+  formatPercentChange(exchange, data, market) {
+    let percentChange = 0
+
+    switch (exchange) {
+      case 'Poloniex':
+        percentChange = data[market].percentChange
+        break;
+      case 'Yunbi':
+        percentChange = 0
+        break;
+      default:
+        console.error('No current exchange')
+    }
+
+    return percentChange
+  }
+
+  hasMarkets(exchange, markets) {
+    const exchangeMarkets = Object.keys(exchangers[exchange].markets)
+
+    markets.forEach((market) => {
+      if (!exchangeMarkets.includes(market)) return false
     })
 
     return true
