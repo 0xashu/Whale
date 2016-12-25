@@ -1,13 +1,26 @@
 {
-  "pairs": {
-    "btc": "btc",
-    "eth": "eth",
-    "dgd": "dgd",
-    "etc": "etc",
-    "1st": "1st",
-    "rep": "rep",
-    "zec": "zec"
+  "Poloniex": {
+    "currency": "$",
+    "markets": {
+      "eth": "USDT_ETH",
+      "dgd": "USDT_BTC",
+      "etc": "USDT_REP"
+    },
+    "ticker": "https://poloniex.com/public?command=returnTicker",
+    "kendpoint": "https://poloniex.com/public?command=returnChartData"
   },
-  "endpoint": "https://yunbi.com/api/v2/tickers.json",
-  "kendpoint": "https://yunbi.com/api/v2/k.json"
+  "Yunbi": {
+    "currency": "¥",
+    "markets": {
+      "btc": "btccny",
+      "eth": "ethcny",
+      "dgd": "dgdcny",
+      "etc": "etccny",
+      "1st": "1stcny",
+      "rep": "repcny",
+      "zec": "zeccny"
+    },
+    "ticker": "https://yunbi.com/api/v2/tickers.json",
+    "kendpoint": "https://yunbi.com/api/v2/k.json"
+  }
 }
