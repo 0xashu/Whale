@@ -2,37 +2,54 @@ const blessed = require('blessed')
 const contrib = require('blessed-contrib')
 const Price = require('./libs/price')
 const utils = require('./libs/utils')
+const wash = require('./libs/wash')
 const exchangers = require('./config/exchangers')
 
 class Whale {
-  constructor(args, pairs) {
+  constructor(args, exchange, markets) {
     this.price = new Price()
     this.cacheData = []
 
-    this.fetchPrice(pairs).then((data) => {
+    this.fetchPrice(exchange, markets).then((data) => {
       this.screen = blessed.screen()
       this.grid = new contrib.grid({ rows: 12, cols: 12, screen: this.screen })
       this.cacheData = data
 
       this.init(data)
-      this.eventListeners(args, pairs)
+      this.eventListeners(args, exchange, markets)
     }).catch((err) => {
       console.error(err)
     })
   }
 
-  fetchPrice(pairs) {
-    const currentPair = pairs.split(',')[0]
+  fetchPrice(exchange, markets) {
+    const currentMarket = markets[0]
+
+    if (exchange === 'Yunbi') {
+      return new Promise((resolve, reject) => {
+        Promise.all([
+          this.price.getCurrentPrice(exchange, markets),
+          this.price.getOpenPriceYUNBI(exchange, markets),
+          this.price.getPriceTrendYUNBI(exchange, currentMarket),
+        ]).then((res) => {
+          resolve({
+            currentPrice: wash.currentPriceYUNBI(res[0], res[1]),
+            priceTrend: wash.priceTrendYUNBI(currentMarket, res[2]),
+          })
+        }).catch((err) => {
+          reject(err)
+        })
+      })
+    }
 
     return new Promise((resolve, reject) => {
       Promise.all([
-        this.price.getCurrentPrice(pairs),
-        this.price.getOpenPrice(pairs),
-        this.price.getPriceTrend(currentPair),
+        this.price.getCurrentPrice(exchange, markets),
+        this.price.getPriceTrend(exchange, currentMarket),
       ]).then((res) => {
         resolve({
-          currentPrice: this.washCurrentPrice(res[0], res[1]),
-          priceTrend: this.washPriceTrend(currentPair, res[2]),
+          currentPrice: wash.currentPrice(res[0]),
+          priceTrend: wash.priceTrend(currentMarket, res[1]),
         })
       }).catch((err) => {
         reject(err)
@@ -67,10 +84,10 @@ class Whale {
     this.createLog(utils.formatCurrentTime())
   }
 
-  eventListeners(args, pairs) {
+  eventListeners(args, markets) {
     this.timer = setInterval(() => {
       this.createLog('Loading...')
-      this.fetchPrice(pairs).then((data) => {
+      this.fetchPrice(exchange, markets).then((data) => {
         this.cacheData = data
 
         this.createTable(data.currentPrice)
@@ -96,42 +113,6 @@ class Whale {
     })
   }
 
-  washCurrentPrice(last, open) {
-    const market = []
-
-    last.map((lastPrice) => {
-      open.map((openPrice) => {
-        if (lastPrice.name === openPrice.name) {
-          market.push({ name: lastPrice.name, last: lastPrice.last, open: openPrice.open })
-        }
-      })
-    })
-
-    return market.map((item) => {
-      const change = (item.last - item.open).toString().charAt(0) === '-'
-      ? `- ${utils.formatDecimal(-(item.last - item.open) / item.open * 100, 2)}%`
-      : `+ ${utils.formatDecimal((item.last - item.open) / item.open * 100, 2)}%`
-
-      return [item.name, item.last, change]
-    })
-  }
-
-  washPriceTrend(currentPair, data) {
-    const closePrices = []
-    const labels = []
-
-    data.map((record) => {
-      closePrices.push(record[1])
-      labels.push(utils.formatDate(new Date(record[0] * 1000), 'MM-dd'))
-    })
-
-    return {
-      currentPair,
-      closePrices,
-      labels
-    }
-  }
-
   createTable(data) {
     this.table.setData({
       headers: ['Asset Name', 'Price', 'Change'],
@@ -144,7 +125,7 @@ class Whale {
 
   createLine(data) {
     const series = {
-      title: data.currentPair,
+      title: data.currentMarket,
       x: data.labels,
       y: data.closePrices,
     }
@@ -161,7 +142,7 @@ class Whale {
   updatePriceTrend(selectedPair) {
     this.createLog(`Loading ${selectedPair} data...`)
     this.price.getPriceTrend(selectedPair).then((data) => {
-      this.createLine(this.washPriceTrend(selectedPair, data))
+      this.createLine(wash.priceTrend(selectedPair, data))
       this.createLog(utils.formatCurrentTime())
     }).catch((err) => {
       console.error(err)
