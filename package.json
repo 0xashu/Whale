@@ -15,14 +15,15 @@
     "url": "git+https://github.com/Aaaaaashu/Whale.git"
   },
   "keywords": [
-    "ethereum",
     "eth",
-    "ether"
+    "ethereum",
     "btc",
     "bitcoin",
-    "digital cash",
+    "crypto-currency",
     "exchange",
     "price",
+    "market",
+    "command-line"
   ],
   "author": "Aaaaaashu",
   "license": "MIT",
