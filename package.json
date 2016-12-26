@@ -1,5 +1,5 @@
 {
-  "name": "whales",
+  "name": "whale-cli",
   "version": "2.0.0",
   "description": "",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "preferGlobal": "true",
   "bin": {
-    "whales": "bin/cli.js"
+    "whale": "bin/cli.js"
   },
   "repository": {
     "type": "git",
@@ -23,7 +23,8 @@
     "exchange",
     "price",
     "market",
-    "command-line"
+    "command-line",
+    "whale"
   ],
   "author": "Aaaaaashu",
   "license": "MIT",

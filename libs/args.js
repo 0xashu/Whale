@@ -2,7 +2,7 @@ const args = require('commander')
 
 args
   .version('0.0.1')
-  .description('Whales, a crypto-currency market price board for geeks')
+  .description('Whale, a crypto-currency market price board for geeks')
   .option('-s, --seconds <number>', 'Set auto refresh time', parseInt)
 
 args.on('--help', () => {
