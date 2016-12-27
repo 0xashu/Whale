@@ -1,6 +1,6 @@
 const blessed = require('blessed')
 const contrib = require('blessed-contrib')
-const sea = require('./libs/sea')
+const api = require('./libs/api')
 const utils = require('./libs/utils')
 const wash = require('./libs/wash')
 const exchangers = require('./config/exchangers')
@@ -14,11 +14,11 @@ class Whale {
       this.grid = new contrib.grid({ rows: 12, cols: 12, screen: this.screen })
       this.cacheData = data
 
-      this.init(data)
+      this.initDashBoard(data)
       this.eventListeners(args, exchange, markets)
     }).catch((err) => {
       console.error('fetchPrice', err)
-      process.exit(0)
+      process.exit(1)
     })
   }
 
@@ -27,8 +27,8 @@ class Whale {
 
     return new Promise((resolve, reject) => {
       Promise.all([
-        sea.getCurrentPrice(exchange, markets),
-        sea.getPriceTrend(exchange, currentMarket),
+        api.getCurrentPrice(exchange, markets),
+        api.getPriceTrend(exchange, currentMarket),
       ]).then((res) => {
         resolve({
           currentPrice: wash.currentPrice(exchange, res[0]),
@@ -40,7 +40,7 @@ class Whale {
     })
   }
 
-  init(data) {
+  initDashBoard(data) {
     this.table = this.grid.set(0, 0, 6, 12, contrib.table,
       { keys: true
       , vi: true
@@ -70,12 +70,12 @@ class Whale {
   eventListeners(args, exchange, markets) {
     this.timer = setInterval(() => {
       this.createLog('Loading...')
-      sea.getCurrentPrice(exchange, markets).then((res) => {
+      api.getCurrentPrice(exchange, markets).then((res) => {
         this.createTable(wash.currentPrice(exchange, res))
         this.createLog(utils.formatCurrentTime())
       }).catch((err) => {
-        console.error(`Load failure: ${err}`)
-        process.exit(0)
+        console.error(`\n Load failure: ${err}`)
+        process.exit(1)
       })
     }, 1000 * (Number.isInteger(args.seconds) ? args.seconds : 30))
 
@@ -85,7 +85,7 @@ class Whale {
 
     this.screen.on('resize', () => {
       utils.throttle(() => {
-        this.init(this.cacheData)
+        this.initDashBoard(this.cacheData)
       }, 360)()
     })
 
@@ -123,12 +123,12 @@ class Whale {
 
   updatePriceTrend(exchange, selectedMarket) {
     this.createLog(`Loading ${selectedMarket} data...`)
-    sea.getPriceTrend(exchange, selectedMarket).then((data) => {
+    api.getPriceTrend(exchange, selectedMarket).then((data) => {
       this.createLine(data)
       this.createLog(utils.formatCurrentTime())
     }).catch((err) => {
       console.error('updatePriceTrend', err)
-      process.exit(0)
+      process.exit(1)
     })
   }
 }
