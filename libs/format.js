@@ -3,13 +3,12 @@ const exchangers = require('../config/exchangers')
 
 exports.currentPrice = function(res = {}, exchange, markets) {
   const currentPriceList = []
-  const data = exchange === 'Kraken' ? res.result : res
 
-  Object.keys(data).map((item) => {
+  Object.keys(res).map((item) => {
     markets.map((market) => {
       if (item === exchangers[exchange].markets[market]) {
-        const last = formatLast(exchange, data, item)
-        const percentChange = formatPercentChange(exchange, data, item)
+        const last = formatLast(exchange, res, item)
+        const percentChange = formatPercentChange(exchange, res, item)
 
         currentPriceList.push({
           name: market,
@@ -49,11 +48,14 @@ function formatLast(exchange, data, market) {
     case 'Kraken':
       last = data[market].c[0]
       break;
+    case 'Bitfinex':
+      last = data[6]
+      break;
     case 'Yunbi':
       last = data[market].ticker.last
       break;
     default:
-      console.error('No current exchange')
+      throw new Error('No current exchange')
   }
 
   return utils.formatDecimal(last, 2)
@@ -69,11 +71,14 @@ function formatPercentChange(exchange, data, market) {
     case 'Kraken':
       percentChange = (data[market].c[0] - data[market].o) / data[market].o
       break;
+    case 'Bitfinex':
+      percentChange = data[5]
+      break;
     case 'Yunbi':
       percentChange = 0
       break;
     default:
-      console.error('No current exchange')
+      throw new Error('No current exchange')
   }
 
   return percentChange
@@ -89,11 +94,14 @@ function formatClose(exchange, record) {
     case 'Kraken':
       close = record[5]
       break;
+    case 'Bitfinex':
+      close = record[2]
+      break;
     case 'Yunbi':
       close = record[2]
       break;
     default:
-      console.error('No current exchange')
+      throw new Error('No current exchange')
   }
 
   return close
@@ -109,11 +117,14 @@ function formatDate(exchange, record) {
     case 'Kraken':
       date = record[0]
       break;
+    case 'Bitfinex':
+      date = record[0] / 1000
+      break;
     case 'Yunbi':
       date = record[0]
       break;
     default:
-      console.error('No current exchange')
+      throw new Error('No current exchange')
   }
 
   return date
