@@ -77,7 +77,7 @@ class Whale {
         console.error(`\n Load failure: ${err}`)
         process.exit(1)
       })
-    }, 1000 * (Number.isInteger(args.seconds) ? args.seconds : 30))
+    }, 1000 * (Number.isInteger(args.seconds) ? args.seconds : 180))
 
     this.table.rows.on('select', (item, selectedIndex) => {
       this.updatePriceTrend(exchange, this.cacheData.currentPrice[selectedIndex][0])
