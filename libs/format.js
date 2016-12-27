@@ -97,6 +97,9 @@ function formatClose(exchange, record) {
     case 'Bitfinex':
       close = record[2]
       break;
+    case 'Coinbase':
+      close = record[4]
+      break;
     case 'Yunbi':
       close = record[2]
       break;
@@ -119,6 +122,9 @@ function formatDate(exchange, record) {
       break;
     case 'Bitfinex':
       date = record[0] / 1000
+      break;
+    case 'Coinbase':
+      date = record[0]
       break;
     case 'Yunbi':
       date = record[0]

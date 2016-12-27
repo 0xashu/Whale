@@ -18,6 +18,8 @@ exports.getCurrentPrice = function(exchange, markets) {
         return fetch.krakenCurrentPrice(exchange, markets)
       case 'Bitfinex':
         return fetch.bitfinexCurrentPrice(exchange, markets)
+      case 'Coinbase':
+        return fetch.coinbaseCurrentPrice(exchange, markets)
       case 'Yunbi':
         return fetch.yunbiCurrentPrice(exchange, markets)
       default:
@@ -50,6 +52,8 @@ exports.getPriceTrend = function(exchange, market, customSince, customPeriod) {
         return fetch.krakenPriceTrend(exchange, market, since, period)
       case 'Bitfinex':
         return fetch.bitfinexPriceTrend(exchange, market, since, period)
+      case 'Coinbase':
+        return fetch.coinbasePriceTrend(exchange, market, since, period)
       case 'Yunbi':
         return fetch.yunbiPriceTrend(exchange, market, since, period)
       default:
@@ -91,6 +95,9 @@ function filterDefaultSince(exchange) {
     case 'Bitfinex':
       since = monthAgoMilliSecond
       break;
+    case 'Coinbase':
+      since = new Date(monthAgoSencond * 1000).toISOString()
+      break;
     case 'Yunbi':
       since = monthAgoSencond
       break;
@@ -113,6 +120,9 @@ function filterDefaultPeriod(exchange) {
       break;
     case 'Bitfinex':
       period = '1D'
+      break;
+    case 'Coinbase':
+      period = 86400
       break;
     case 'Yunbi':
       period = 1440 // 1440 / 60 = 24
