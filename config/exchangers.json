@@ -57,9 +57,7 @@
   "Coinbase": {
     "currency": "$",
     "markets": {
-      "BTC": "BTC-USD",
-      "ETH": "ETH-USD",
-      "LTC": "LTC-USD"
+      "BTC": "BTC-USD"
     },
     "ticker": "https://api.gdax.com/products",
     "kendpoint": "https://api.gdax.com/products"
