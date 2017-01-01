@@ -14,7 +14,7 @@ class Whale {
       this.grid = new contrib.grid({ rows: 12, cols: 12, screen: this.screen })
       this.cacheData = data
 
-      this.initDashBoard(data)
+      this.initDashBoard(data, exchange)
       this.eventListeners(args, exchange, markets)
     }).catch((err) => {
       console.error('fetchPrice', err)
@@ -40,7 +40,7 @@ class Whale {
     })
   }
 
-  initDashBoard(data) {
+  initDashBoard(data, exchange) {
     this.table = this.grid.set(0, 0, 6, 12, contrib.table,
       { keys: true
       , vi: true
@@ -48,7 +48,7 @@ class Whale {
       , selectedFg: 'white'
       , selectedBg: 'cyan'
       , interactive: true
-      , label: 'Whale -- Current Price'
+      , label: `${exchange} -- Current Price`
       , border: { type: "line", fg: "cyan" }
       , columnSpacing: 10
       , columnWidth: [10, 10, 10] })
