@@ -40,7 +40,7 @@ Run `whale` without arguments to launch the interactive UI that guides you throu
 const whale = require('whale-cli')
 
 /**
- * Fetch current price of  markets
+ * Fetch current price of markets
  * @param {String} exchange
  * @param {Array} markets
  */
@@ -49,7 +49,7 @@ whale.getCurrentPrice('Poloniex', ['BTC', 'ETH', 'ZEC']).then((res) => {
 })
 
 /**
- * Fetch current price of  markets
+ * Fetch current price of markets
  * @param {String} exchange
  * @param {String} market
  * @param {Number} since options, default one month ago
