@@ -8,7 +8,9 @@
   },
   "preferGlobal": "true",
   "bin": {
-    "whale": "bin/cli.js"
+    "whale": "bin/cli.js",
+    "whale-tmux": "bin/whale-tmux.js",
+    "whale-tmux-sh": "bin/whale-tmux.sh"
   },
   "repository": {
     "type": "git",
