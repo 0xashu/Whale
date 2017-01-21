@@ -49,7 +49,7 @@ whale.getCurrentPrice('Poloniex', ['BTC', 'ETH', 'ZEC']).then((res) => {
 })
 
 /**
- * Fetch current price of markets
+ * Fetch price trend of markets
  * @param {String} exchange
  * @param {String} market
  * @param {Number} since options, default one month ago
