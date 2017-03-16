@@ -8,7 +8,8 @@
       "ZEC": "zeccny",
       "DGD": "dgdcny",
       "1ST": "1stcny",
-      "REP": "repcny"
+      "REP": "repcny",
+      "SC":"sccny"
     },
     "ticker": "https://yunbi.com/api/v2/tickers.json",
     "kendpoint": "https://yunbi.com/api/v2/k.json",
