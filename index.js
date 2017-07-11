@@ -7,13 +7,11 @@ const wash = require('./libs/wash')
 class Whale {
   constructor(interval, exchange, markets) {
     this.cacheData = {}
-    this.cacheExchange = {}
 
     this.fetchPrice(exchange, markets).then((data) => {
       this.screen = blessed.screen()
       this.grid = new contrib.grid({ rows: 12, cols: 12, screen: this.screen })
       this.cacheData = data
-      this.cacheExchange = exchange;
 
       this.initDashBoard(data, exchange)
       this.eventListeners(interval, exchange, markets)
@@ -86,7 +84,7 @@ class Whale {
 
     this.screen.on('resize', () => {
       utils.throttle(() => {
-        this.initDashBoard(this.cacheData, this.cacheExchange)
+        this.initDashBoard(this.cacheData, exchange)
       }, 360)()
     })
 
