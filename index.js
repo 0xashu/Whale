@@ -46,18 +46,19 @@ class Whale {
   }
 
   initDashBoard(data, exchange) {
-    this.table = this.grid.set(0, 0, 6, 12, contrib.table,
+    this.table = this.grid.set(0, 0, 4, 12, contrib.table,
       { keys: true
       , vi: true
       , fg: this.config.colors.tableFg
       , selectedFg: this.config.colors.tableSelectedFg
       , selectedBg: this.config.colors.tableSelectedBg
       , interactive: true
-      , label: `${exchange.name} -- Current Price`
+      , label: ` ${exchange.name} -- Current Price `
       , columnSpacing: 10
+      , padding: { top: this.config.tableHeaders ? 0 : -1 }
       , columnWidth: [10, 10, 10] })
 
-    this.line = this.grid.set(6, 0, 5, 12, contrib.line,
+    this.line = this.grid.set(4, 0, 7, 12, contrib.line,
       { label: ` ${data.priceTrend.currentMarket} -- Price Trend (recent month) `
       , style: {
           baseline: this.config.colors.chartBaseline
@@ -104,7 +105,7 @@ class Whale {
 
   createTable(data) {
     this.table.setData({
-      headers: ['Asset Name', 'Price', 'Change'],
+      headers: this.config.tableHeaders ? ['Asset Name', 'Price', 'Change'] : [],
       data: data,
     })
 
@@ -120,7 +121,6 @@ class Whale {
 
     this.line.setData(series)
     this.line.setLabel(` ${data.currentMarket} -- Price Trend (recent month) `)
-
     this.screen.render()
   }
 

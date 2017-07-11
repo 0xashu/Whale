@@ -1,6 +1,8 @@
 {
- "interval": 180,
- "showLegend": true,
+  "interval": 180,
+  "showLegend": false,
+  "tableHeaders": true,
+
   "colors": {
     "border": "cyan",
     "tableFg": "cyan",
