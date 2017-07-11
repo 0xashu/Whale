@@ -1,7 +1,7 @@
 {
   "whale": {
     "interval": 60,
-    "showLegend": false,
+    "showLegend": true,
     "colors": {
       "tableFg": "cyan",
       "tableSelectedFg": "black",
@@ -15,7 +15,10 @@
       "currency": "€",
       "markets": {
         "BTC": "XXBTZEUR",
-        "ETH": "XETHZEUR"
+        "ETH": "XETHZEUR",
+        "ETC": "XETCZEUR",
+        "ZEC": "XZECZEUR",
+        "REP": "XREPZEUR"
       },
       "ticker": "https://api.kraken.com/0/public/Ticker",
       "kendpoint": "https://api.kraken.com/0/public/OHLC",
