@@ -14,7 +14,7 @@ if (args.config) {
   exchangers = require(args.config);
 }
 
-prompt(exchangers).then((answer) => {
+prompt(exchangers, args.all).then((answer) => {
   CFonts.say('Whale, show Ethereum and Bitcoin price in command line interface (CLI).|Loading...', {
     font: 'console',
     align: 'left',
@@ -25,7 +25,9 @@ prompt(exchangers).then((answer) => {
     maxLength: '0'
   })
 
+  // Init whale with selected exchange.
   const exchange = exchangers[answer.exchange];
   exchange.name = answer.exchange;
+
   new Whale(args.seconds, exchange, answer.markets)
-}).catch(console.log)
+}).catch(console.error)
