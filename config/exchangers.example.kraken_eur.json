@@ -1,0 +1,66 @@
+{
+  "Yunbi": {
+    "currency": "¥",
+    "markets": {
+      "BTC": "btccny",
+      "ETH": "ethcny",
+      "ETC": "etccny",
+      "ZEC": "zeccny",
+      "DGD": "dgdcny",
+      "1ST": "1stcny",
+      "REP": "repcny",
+      "SC":"sccny"
+    },
+    "ticker": "https://yunbi.com/api/v2/tickers.json",
+    "kendpoint": "https://yunbi.com/api/v2/k.json",
+    "periods": [5, 60, 1440, 10080]
+  },
+  "Poloniex": {
+    "currency": "$",
+    "markets": {
+      "BTC": "USDT_BTC",
+      "ETH": "USDT_ETH",
+      "ETC": "USDT_ETC",
+      "ZEC": "USDT_ZEC",
+      "REP": "USDT_REP",
+      "LTC": "USDT_LTC"
+    },
+    "ticker": "https://poloniex.com/public?command=returnTicker",
+    "kendpoint": "https://poloniex.com/public?command=returnChartData",
+    "periods": [5, 120, 240, 1440]
+  },
+  "Kraken": {
+    "currency": "€",
+    "markets": {
+      "BTC": "XXBTZEUR",
+      "ETH": "XETHZEUR",
+      "ETC": "XETCZEUR",
+      "ZEC": "XZECZEUR",
+      "REP": "XREPZEUR"
+    },
+    "ticker": "https://api.kraken.com/0/public/Ticker",
+    "kendpoint": "https://api.kraken.com/0/public/OHLC",
+    "periods": [5, 60, 1440, 10080]
+  },
+  "Bitfinex": {
+    "currency": "$",
+    "markets": {
+      "BTC": "tBTCUSD",
+      "ETH": "tETHUSD",
+      "ETC": "tETCUSD",
+      "ZEC": "tZECUSD",
+      "LTC": "tLTCUSD"
+    },
+    "ticker": "https://api.bitfinex.com/v2/ticker",
+    "kendpoint": "https://api.bitfinex.com/v2/candles/trade",
+    "period": ["1m", "5m", "15m", "30m", "1h", "3h", "6h", "12h", "1D", "7D", "14D", "1M"]
+  },
+  "Coinbase": {
+    "currency": "$",
+    "markets": {
+      "BTC": "BTC-USD"
+    },
+    "ticker": "https://api.gdax.com/products",
+    "kendpoint": "https://api.gdax.com/products"
+  }
+}
