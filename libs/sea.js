@@ -1,17 +1,17 @@
-const exchangers = require('../config/exchangers')
+/*jshint -W018 */ // confusing use of '!'
 const fetch = require('./fetch')
 
 exports.getCurrentPrice = function(exchange, markets) {
-  if (!exchange instanceof String) {
-    return Promise.reject('TypeError: exchange should be an string type')
+  if (!exchange instanceof Object) {
+    return Promise.reject('TypeError: exchange should be an object type')
   }
 
-  if (!markets instanceof Array) {
+  if (!markets instanceof Array) { // jshint ignore:line
     return Promise.reject('TypeError: markets should be an array type')
   }
 
   if (hasMarkets(exchange, markets)) {
-    switch (exchange) {
+    switch (exchange.name) {
       case 'Poloniex':
         return fetch.poloniexCurrentPrice(exchange, markets)
       case 'Kraken':
@@ -31,8 +31,8 @@ exports.getCurrentPrice = function(exchange, markets) {
 }
 
 exports.getPriceTrend = function(exchange, market, customSince, customPeriod) {
-  if (!exchange instanceof String) {
-    return Promise.reject('TypeError: exchange should be an string type')
+  if (!exchange instanceof Object) {
+    return Promise.reject('TypeError: exchange should be an object type')
   }
 
   if (!market instanceof String) {
@@ -45,7 +45,7 @@ exports.getPriceTrend = function(exchange, market, customSince, customPeriod) {
   const period = customPeriod || defaultPeriod
 
   if (hasMarkets(exchange, market)) {
-    switch (exchange) {
+    switch (exchange.name) {
       case 'Poloniex':
         return fetch.poloniexPriceTrend(exchange, market, since, period)
       case 'Kraken':
@@ -65,9 +65,9 @@ exports.getPriceTrend = function(exchange, market, customSince, customPeriod) {
 }
 
 function hasMarkets(exchange, markets) {
-  const exchangeMarkets = Object.keys(exchangers[exchange].markets)
+  const exchangeMarkets = Object.keys(exchange.markets)
 
-  if (typeof markets === 'array') {
+  if (typeof markets === 'array') { // jshint ignore:line
     markets.forEach((market) => {
       if (!exchangeMarkets.includes(market)) return false
     })
@@ -85,7 +85,7 @@ function filterDefaultSince(exchange) {
   const monthAgoMilliSecond = Math.round(new Date().getTime()) - (30 * 24 * 3600 * 1000)
   let since = monthAgoSencond
 
-  switch (exchange) {
+  switch (exchange.name) {
     case 'Poloniex':
       since = monthAgoSencond
       break;
@@ -111,7 +111,7 @@ function filterDefaultSince(exchange) {
 function filterDefaultPeriod(exchange) {
   let period = 1440
 
-  switch (exchange) {
+  switch (exchange.name) {
     case 'Poloniex':
       period = 86400 // 86400 / 60 / 60 = 24
       break;

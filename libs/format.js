@@ -1,12 +1,11 @@
 const utils = require('./utils')
-const exchangers = require('../config/exchangers')
 
 exports.currentPrice = function(res = {}, exchange, markets) {
   const currentPriceList = []
 
   Object.keys(res).map((item) => {
     markets.map((market) => {
-      if (item === exchangers[exchange].markets[market]) {
+      if (item === exchange.markets[market]) {
         const last = formatLast(exchange, res, item)
         const percentChange = formatPercentChange(exchange, res, item)
 
@@ -41,7 +40,7 @@ exports.priceTrend = function(res = [], exchange, currentMarket) {
 function formatLast(exchange, data, market) {
   let last = 0
 
-  switch (exchange) {
+  switch (exchange.name) {
     case 'Poloniex':
       last = data[market].last
       break;
@@ -64,7 +63,7 @@ function formatLast(exchange, data, market) {
 function formatPercentChange(exchange, data, market) {
   let percentChange = 0
 
-  switch (exchange) {
+  switch (exchange.name) {
     case 'Poloniex':
       percentChange = data[market].percentChange
       break;
@@ -87,7 +86,7 @@ function formatPercentChange(exchange, data, market) {
 function formatClose(exchange, record) {
   let close = 0
 
-  switch (exchange) {
+  switch (exchange.name) {
     case 'Poloniex':
       close = record.close
       break;
@@ -113,7 +112,7 @@ function formatClose(exchange, record) {
 function formatDate(exchange, record) {
   let date = 0
 
-  switch (exchange) {
+  switch (exchange.name) {
     case 'Poloniex':
       date = record.date
       break;

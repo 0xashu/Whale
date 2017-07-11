@@ -1,6 +1,5 @@
 const request = require('superagent')
 const format = require('../format')
-const exchangers = require('../../config/exchangers')
 
 // Coinbase
 exports.coinbaseCurrentPrice = function(exchange, markets) {
@@ -28,7 +27,7 @@ exports.coinbaseCurrentPrice = function(exchange, markets) {
 exports.coinbasePriceTrend = function(exchange, market, since, period) {
   const end = new Date().toISOString()
   return new Promise((resolve, reject) => {
-    request(`${exchangers[exchange].kendpoint}/${exchangers[exchange].markets[market]}/candles`)
+    request(`${exchange.kendpoint}/${exchange.markets[market]}/candles`)
     .query({ start: since, end: end, granularity: period })
     .end((err, res) => {
       if (!err) {
@@ -45,16 +44,16 @@ function coinbaseLastPrice(exchange, markets) {
   const marketPairs = []
 
   markets.map((item) => {
-    Object.keys(exchangers[exchange].markets).map((market) => {
+    Object.keys(exchange.markets).map((market) => {
       if (item === market) {
-        marketPairs.push([exchangers[exchange].markets[market], market])
+        marketPairs.push([exchange.markets[market], market])
       }
     })
   })
 
   const promiseList = marketPairs.map((market) => {
     return new Promise((resolve, reject) => {
-      request(`${exchangers[exchange].ticker}/${market[0]}/ticker`)
+      request(`${exchange.ticker}/${market[0]}/ticker`)
       .end((err, res) => {
         if (!err) {
           resolve({ name: market[1], last: res.body.price, percentChange: 0})
@@ -80,7 +79,7 @@ function coinbaseOpenPrice(exchange, markets) {
 
   const promiseList = markets.map((market) => {
     return new Promise((resolve, reject) => {
-      request(`${exchangers[exchange].kendpoint}/${exchangers[exchange].markets[market]}/candles`)
+      request(`${exchange.kendpoint}/${exchange.markets[market]}/candles`)
       .query({ start: tsOpen, granularity: 86400 })
       .end((err, res) => {
         if (!err) {
