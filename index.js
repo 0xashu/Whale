@@ -3,10 +3,9 @@ const contrib = require('blessed-contrib')
 const api = require('./libs/api')
 const utils = require('./libs/utils')
 const wash = require('./libs/wash')
-const exchangers = require('./config/exchangers')
 
 class Whale {
-  constructor(args, exchange, markets) {
+  constructor(interval, exchange, markets) {
     this.cacheData = {}
 
     this.fetchPrice(exchange, markets).then((data) => {
@@ -15,7 +14,7 @@ class Whale {
       this.cacheData = data
 
       this.initDashBoard(data, exchange)
-      this.eventListeners(args, exchange, markets)
+      this.eventListeners(interval, exchange, markets)
     }).catch((err) => {
       console.error('fetchPrice', err)
       process.exit(1)
@@ -48,7 +47,7 @@ class Whale {
       , selectedFg: 'white'
       , selectedBg: 'cyan'
       , interactive: true
-      , label: `${exchange} -- Current Price`
+      , label: `${exchange.name} -- Current Price`
       , border: { type: "line", fg: "cyan" }
       , columnSpacing: 10
       , columnWidth: [10, 10, 10] })
@@ -67,7 +66,7 @@ class Whale {
     this.createLog(utils.formatCurrentTime())
   }
 
-  eventListeners(args, exchange, markets) {
+  eventListeners(interval, exchange, markets) {
     this.timer = setInterval(() => {
       this.createLog('Loading...')
       api.getCurrentPrice(exchange, markets).then((res) => {
@@ -77,7 +76,7 @@ class Whale {
         console.error(`\n Load failure: ${err}`)
         process.exit(1)
       })
-    }, 1000 * (Number.isInteger(args.seconds) ? args.seconds : 180))
+    }, 1000 * (Number.isInteger(interval) ? interval : 180))
 
     this.table.rows.on('select', (item, selectedIndex) => {
       this.updatePriceTrend(exchange, this.cacheData.currentPrice[selectedIndex][0])
@@ -85,7 +84,7 @@ class Whale {
 
     this.screen.on('resize', () => {
       utils.throttle(() => {
-        this.initDashBoard(this.cacheData)
+        this.initDashBoard(this.cacheData, exchange)
       }, 360)()
     })
 

@@ -1,0 +1,15 @@
+{
+  "Kraken": {
+    "currency": "€",
+    "markets": {
+      "BTC": "XXBTZEUR",
+      "ETH": "XETHZEUR",
+      "ETC": "XETCZEUR",
+      "ZEC": "XZECZEUR",
+      "REP": "XREPZEUR"
+    },
+    "ticker": "https://api.kraken.com/0/public/Ticker",
+    "kendpoint": "https://api.kraken.com/0/public/OHLC",
+    "periods": [5, 60, 1440, 10080]
+  }
+}
