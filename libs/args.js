@@ -4,6 +4,7 @@ args
   .version('0.0.1')
   .description('Whale, show Ethereum and Bitcoin price in command line interface (CLI).')
   .option('-s, --seconds <number>', 'Set auto refresh time', parseInt)
+  .option('-c, --config <configfile>', 'Use custom exchangers config')
 
 args.on('--help', () => {
   console.log('  Examples:')

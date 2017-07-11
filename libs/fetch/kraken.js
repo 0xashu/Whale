@@ -1,20 +1,19 @@
 const request = require('superagent')
 const format = require('../format')
-const exchangers = require('../../config/exchangers')
 
 // Kraken
 exports.krakenCurrentPrice = function(exchange, markets) {
   const marketPairs = []
   markets.map((item) => {
-    Object.keys(exchangers[exchange].markets).map((market) => {
+    Object.keys(exchange.markets).map((market) => {
       if (item === market) {
-        marketPairs.push(exchangers[exchange].markets[market])
+        marketPairs.push(exchange.markets[market])
       }
     })
   })
 
   return new Promise((resolve, reject) => {
-    request(exchangers[exchange].ticker)
+    request(exchange.ticker)
     .query({ pair: marketPairs.join(',') })
     .end((err, res) => {
       if (!err) {
@@ -28,9 +27,9 @@ exports.krakenCurrentPrice = function(exchange, markets) {
 }
 
 exports.krakenPriceTrend = function(exchange, market, since, period) {
-  const pair = exchangers[exchange].markets[market]
+  const pair = exchange.markets[market]
   return new Promise((resolve, reject) => {
-    request(exchangers[exchange].kendpoint)
+    request(exchange.kendpoint)
     .query({ pair: pair, since: since, interval: period })
     .end((err, res) => {
       if (!err) {

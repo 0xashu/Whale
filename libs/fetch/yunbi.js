@@ -1,6 +1,5 @@
 const request = require('superagent')
 const format = require('../format')
-const exchangers = require('../../config/exchangers')
 
 // Yunbi
 exports.yunbiCurrentPrice = function(exchange, markets) {
@@ -27,8 +26,8 @@ exports.yunbiCurrentPrice = function(exchange, markets) {
 
 exports.yunbiPriceTrend = function(exchange, market, since, period) {
   return new Promise((resolve, reject) => {
-    request(exchangers[exchange].kendpoint)
-    .query({ market: exchangers[exchange].markets[market], timestamp: since, period: period })
+    request(exchange.kendpoint)
+    .query({ market: exchange.markets[market], timestamp: since, period: period })
     .end((err, res) => {
       if (!err) {
         const formatData = format.priceTrend(res.body, exchange, market)
@@ -42,7 +41,7 @@ exports.yunbiPriceTrend = function(exchange, market, since, period) {
 
 function yunbiLastPrice(exchange, markets) {
   return new Promise((resolve, reject) => {
-    request(exchangers[exchange].ticker).end((err, res) => {
+    request(exchange.ticker).end((err, res) => {
       if (!err) {
         const formatData = format.currentPrice(res.body, exchange, markets)
         resolve(formatData)
@@ -59,8 +58,8 @@ function yunbiOpenPrice(exchange, markets) {
 
   const promiseList = markets.map((market) => {
     return new Promise((resolve, reject) => {
-      request(exchangers[exchange].kendpoint)
-      .query({ market: exchangers[exchange].markets[market], limit: 1, period: 1, timestamp: tsOpen })
+      request(exchange.kendpoint)
+      .query({ market: exchange.markets[market], limit: 1, period: 1, timestamp: tsOpen })
       .end((err, res) => {
         if (!err) {
           resolve({ name: market, open: res.body[0][1] })
