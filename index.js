@@ -87,7 +87,7 @@ class Whale {
 
     this.screen.on('resize', () => {
       utils.throttle(() => {
-        this.initDashBoard(this.cacheData, this.cacheExchange)
+        this.initDashBoard(this.cacheData, exchange)
       }, 360)()
     })
 
