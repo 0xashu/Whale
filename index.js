@@ -58,12 +58,15 @@ class Whale {
       , columnWidth: [10, 10, 10] })
 
     this.line = this.grid.set(6, 0, 5, 12, contrib.line,
-      { label: 'Price Trend (recent month)'
+      { label: ` ${data.priceTrend.currentMarket} -- Price Trend (recent month) `
+      , style: {
+          baseline: this.config.colors.chartBaseline
+        , text: this.config.colors.chartText }
       , showLegend: this.config.showLegend })
 
     this.log = this.grid.set(11, 0, 1, 12, contrib.log,
-      { fg: this.config.logFg
-      , selectedFg: this.config.logSelectedFg
+      { fg: this.config.colors.logFg
+      , selectedFg: this.config.colors.logSelectedFg
       , label: 'Server Log' })
 
     this.createTable(data.currentPrice)
@@ -110,13 +113,14 @@ class Whale {
   }
 
   createLine(data) {
-    const series = {
-      title: data.currentMarket,
-      x: data.labels,
-      y: data.closePricesList,
-    }
+    const series = { title: data.currentMarket
+                     , x: data.labels
+                     , y: data.closePricesList
+                     , style: { line: this.config.colors.chartLine }}
 
     this.line.setData(series)
+    this.line.setLabel(` ${data.currentMarket} -- Price Trend (recent month) `)
+
     this.screen.render()
   }
 
