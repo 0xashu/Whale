@@ -11,7 +11,12 @@ class Whale {
 
     this.fetchPrice(exchange, markets).then((data) => {
       this.screen = blessed.screen()
-      this.grid = new contrib.grid({ rows: 12, cols: 12, screen: this.screen })
+      this.grid = new contrib.grid({
+        screen: this.screen,
+        rows: 12,
+        cols: 12,
+        color: this.config.colors.border
+      })
       this.cacheData = data
 
       this.initDashBoard(data, exchange)
@@ -49,7 +54,6 @@ class Whale {
       , selectedBg: this.config.colors.tableSelectedBg
       , interactive: true
       , label: `${exchange.name} -- Current Price`
-      , border: { type: "line", fg: this.config.colors.border }
       , columnSpacing: 10
       , columnWidth: [10, 10, 10] })
 
