@@ -1,0 +1,12 @@
+{
+ "interval": 180,
+ "showLegend": true,
+  "colors": {
+    "border": "cyan",
+    "tableFg": "cyan",
+    "tableSelectedFg": "white",
+    "tableSelectedBg": "cyan",
+    "logFg": "green",
+    "logSelectedFg": "green"
+  }
+}
