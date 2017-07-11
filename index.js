@@ -8,13 +8,11 @@ class Whale {
   constructor(config, exchange, markets) {
     this.config = config;
     this.cacheData = {}
-    this.cacheExchange = {}
 
     this.fetchPrice(exchange, markets).then((data) => {
       this.screen = blessed.screen()
       this.grid = new contrib.grid({ rows: 12, cols: 12, screen: this.screen })
       this.cacheData = data
-      this.cacheExchange = exchange;
 
       this.initDashBoard(data, exchange)
       this.eventListeners(config.interval, exchange, markets)
@@ -67,6 +65,10 @@ class Whale {
     this.createTable(data.currentPrice)
     this.createLine(data.priceTrend)
     this.createLog(utils.formatCurrentTime())
+
+    this.table.rows.on('select', (item, selectedIndex) => {
+      this.updatePriceTrend(exchange, this.cacheData.currentPrice[selectedIndex][0])
+    })
   }
 
   eventListeners(interval, exchange, markets) {
@@ -80,10 +82,6 @@ class Whale {
         process.exit(1)
       })
     }, 1000 * (Number.isInteger(interval) ? interval : 180))
-
-    this.table.rows.on('select', (item, selectedIndex) => {
-      this.updatePriceTrend(exchange, this.cacheData.currentPrice[selectedIndex][0])
-    })
 
     this.screen.on('resize', () => {
       utils.throttle(() => {
