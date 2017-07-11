@@ -5,7 +5,8 @@ const utils = require('./libs/utils')
 const wash = require('./libs/wash')
 
 class Whale {
-  constructor(interval, exchange, markets) {
+  constructor(config, exchange, markets) {
+    this.config = config;
     this.cacheData = {}
     this.cacheExchange = {}
 
@@ -16,7 +17,7 @@ class Whale {
       this.cacheExchange = exchange;
 
       this.initDashBoard(data, exchange)
-      this.eventListeners(interval, exchange, markets)
+      this.eventListeners(config.interval, exchange, markets)
     }).catch((err) => {
       console.error('fetchPrice', err)
       process.exit(1)
@@ -45,22 +46,22 @@ class Whale {
     this.table = this.grid.set(0, 0, 6, 12, contrib.table,
       { keys: true
       , vi: true
-      , fg: 'white'
-      , selectedFg: 'white'
-      , selectedBg: 'cyan'
+      , fg: this.config.colors.tableFg
+      , selectedFg: this.config.colors.tableSelectedFg
+      , selectedBg: this.config.colors.tableSelectedBg
       , interactive: true
       , label: `${exchange.name} -- Current Price`
-      , border: { type: "line", fg: "cyan" }
+      , border: { type: "line", fg: this.config.colors.border }
       , columnSpacing: 10
       , columnWidth: [10, 10, 10] })
 
     this.line = this.grid.set(6, 0, 5, 12, contrib.line,
       { label: 'Price Trend (recent month)'
-      , showLegend: true })
+      , showLegend: this.config.showLegend })
 
     this.log = this.grid.set(11, 0, 1, 12, contrib.log,
-      { fg: "green"
-      , selectedFg: "green"
+      { fg: this.config.logFg
+      , selectedFg: this.config.logSelectedFg
       , label: 'Server Log' })
 
     this.createTable(data.currentPrice)
