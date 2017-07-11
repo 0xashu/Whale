@@ -7,6 +7,9 @@
     "tableSelectedFg": "white",
     "tableSelectedBg": "cyan",
     "logFg": "green",
-    "logSelectedFg": "green"
+    "logSelectedFg": "green",
+    "chartLine": "yellow",
+    "chartText": "yellow",
+    "chartBaseline": "black"
   }
 }
