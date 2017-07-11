@@ -1,0 +1,31 @@
+{
+  "whale": {
+    "interval": 60,
+    "showLegend": true,
+    "colors": {
+      "tableFg": "cyan",
+      "tableSelectedFg": "black",
+      "tableSelectedBg": "cyan",
+      "logFg": "magenta",
+      "logSelectedFg": "magenta"
+    }
+  },
+  "exchangers": {
+    "Yunbi": {
+      "currency": "¥",
+      "markets": {
+        "BTC": "btccny",
+        "ETH": "ethcny",
+        "ETC": "etccny",
+        "ZEC": "zeccny",
+        "DGD": "dgdcny",
+        "1ST": "1stcny",
+        "REP": "repcny",
+        "SC":"sccny"
+      },
+      "ticker": "https://yunbi.com/api/v2/tickers.json",
+      "kendpoint": "https://yunbi.com/api/v2/k.json",
+      "periods": [5, 60, 1440, 10080]
+    }
+  }
+}
